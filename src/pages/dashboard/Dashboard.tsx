@@ -20,7 +20,7 @@ export const Dashboard: React.FC = () => {
       title: 'Cadastrar um Produto',
       description: 'Adicione novos produtos ao sistema.',
       buttonText: 'Cadastrar',
-      onClick: () => navigate('/register-product'),
+      onClick: () => navigate('/list-product'),
     },
     {
       title: 'Lista de Produtos Cadastrados',

@@ -6,7 +6,6 @@ import { Dashboard, Profile, ListProducts } from '../pages'
 
 import { MenuSideBar } from '../shared/components'
 import { useAuth } from '../shared/hooks/auth'
-import { RegisterProduct } from '../pages/register-product/RegisterProduct'
 
 interface IDrawerOption {
   label: string
@@ -29,11 +28,6 @@ export const PrivateRoutes: React.FC = () => {
         icon: 'assignment',
         path: '/list-products',
       },
-      {
-        label: 'Cadastrar',
-        icon: 'topic',
-        path: '/register-product',
-      },
     ]
 
     setDrawerOptions(drawOpt)
@@ -42,7 +36,6 @@ export const PrivateRoutes: React.FC = () => {
   return (
     <MenuSideBar>
       <Routes>
-        <Route path="/register-product" element={<RegisterProduct />} />
         <Route path="/home" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/list-products" element={<ListProducts />} />

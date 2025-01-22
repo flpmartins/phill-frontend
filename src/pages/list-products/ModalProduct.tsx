@@ -1,24 +1,33 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Button, Grid, IconButton, useTheme } from '@mui/material'
+import React, { useRef, useState } from 'react'
+import { Button, Grid, useTheme } from '@mui/material'
 import * as Yup from 'yup'
 
-import { BaseLayoutPage } from '../../shared/layouts/BaseLayoutPage'
-
-import { createProduct, deleteProduct, getProducts } from '../../api/api'
+import { createProduct, updateProduct } from '../../api/api'
 
 import { useToast } from '../../shared/hooks/Toast'
 import { VTextField } from '../../shared/components'
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
-import SearchIcon from '@mui/icons-material/Search'
 import getValidationErrors from '../../shared/utils/getValidationErrors'
-import { useNavigate } from 'react-router-dom'
-export const RegisterProduct: React.FC = () => {
+import { ModalComponent } from '../../shared/components/modal-component/modal-component'
+
+interface IModalProduct {
+  open: boolean
+  product: any | null
+  onClose: () => void
+  setSubmitSucess: () => void
+}
+
+export const ModalProduct: React.FC<IModalProduct> = ({
+  product,
+  open,
+  onClose,
+  setSubmitSucess,
+}) => {
   const theme = useTheme()
   const formRef = useRef<FormHandles>(null)
   const [loading, setLoading] = useState(false)
   const { addToast } = useToast()
-  const navigate = useNavigate()
   const handleFilter = async (data: any) => {
     try {
       const schema = Yup.object().shape({
@@ -31,14 +40,20 @@ export const RegisterProduct: React.FC = () => {
       setLoading(true)
 
       await schema.validate(data, { abortEarly: false })
-
-      await createProduct(data)
-      navigate('/home')
-
-      addToast({
-        type: 'success',
-        title: 'produto adicionado com sucesso!',
-      })
+      if (product) {
+        await updateProduct(data, product.id)
+        addToast({
+          type: 'success',
+          title: 'produto alterado com sucesso com sucesso!',
+        })
+      } else {
+        await createProduct(data)
+        addToast({
+          type: 'success',
+          title: 'produto adicionado com sucesso!',
+        })
+      }
+      setSubmitSucess()
     } catch (error: any) {
       if (error instanceof Yup.ValidationError) {
         const errors = getValidationErrors(error)
@@ -54,11 +69,12 @@ export const RegisterProduct: React.FC = () => {
   }
 
   return (
-    <BaseLayoutPage
-      title="Registre seu produto!"
-      subTitle="Assim que finalizar o cadastro do produto você será direcionado para a página de listagem."
+    <ModalComponent
+      isOpen={open}
+      handleClose={onClose}
+      title={product ? 'Alterar produto' : 'Cadastrar produto'}
     >
-      <Form ref={formRef} onSubmit={handleFilter}>
+      <Form ref={formRef} onSubmit={handleFilter} initialData={product}>
         <Grid container spacing={2}>
           <Grid item xs={4}>
             <VTextField name="name" label="Nome" variant="standard" />
@@ -93,11 +109,11 @@ export const RegisterProduct: React.FC = () => {
                 marginTop: '10px',
               }}
             >
-              cadastrar produto
+              {product ? 'Alterar produto' : 'Cadastrar produto'}
             </Button>
           </Grid>
         </Grid>
       </Form>
-    </BaseLayoutPage>
+    </ModalComponent>
   )
 }

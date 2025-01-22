@@ -8,6 +8,7 @@ import {
   IconButton,
   useTheme,
   Menu,
+  Button,
 } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import * as Yup from 'yup'
@@ -24,6 +25,9 @@ import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import SearchIcon from '@mui/icons-material/Search'
 import getValidationErrors from '../../shared/utils/getValidationErrors'
+import { ModalProduct } from './ModalProduct'
+import { useModal } from '../../shared/hooks/Modal'
+
 export const ListProducts: React.FC = () => {
   const theme = useTheme()
   const formRef = useRef<FormHandles>(null)
@@ -33,10 +37,15 @@ export const ListProducts: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [totalProducts, setTotalProducts] = useState(0)
   const [flag, setFlag] = useState(false)
-  const refresh = () => setFlag((prevFlag) => !prevFlag)
+  const refresh = () => {
+    setFlag((prevFlag) => !prevFlag)
+    setSelectedRow(null)
+  }
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [selectedRow, setSelectedRow] = useState<any | null>(null)
   const { addToast } = useToast()
+
+  const { isModalOpen, handleCloseModal, handleOpenModal } = useModal()
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -67,7 +76,6 @@ export const ListProducts: React.FC = () => {
 
   const handleClose = () => {
     setAnchorEl(null)
-    setSelectedRow(null)
   }
 
   const handleDeleteProduct = async (row: any) => {
@@ -150,7 +158,14 @@ export const ListProducts: React.FC = () => {
             transformOrigin={{ vertical: 'top', horizontal: 'center' }}
           >
             <MenuItem onClick={() => handleDeleteProduct(row)}>
-              excluir
+              Excluir
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleOpenModal('modalProduct')
+              }}
+            >
+              Editar
             </MenuItem>
           </Menu>
         </>
@@ -206,6 +221,24 @@ export const ListProducts: React.FC = () => {
               <SearchIcon />
             </IconButton>
           </Grid>
+          <Grid
+            item
+            xs={6}
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'flex-end',
+              gap: '10px',
+            }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleOpenModal('modalProduct')}
+            >
+              Adicionar Produto
+            </Button>
+          </Grid>
 
           <Grid item xs={12}>
             <TableComponent
@@ -225,6 +258,15 @@ export const ListProducts: React.FC = () => {
           </Grid>
         </Grid>
       </Form>
+      <ModalProduct
+        onClose={() => {
+          handleCloseModal('modalProduct')
+          setSelectedRow(null)
+        }}
+        open={isModalOpen('modalProduct')}
+        setSubmitSucess={refresh}
+        product={selectedRow}
+      />
     </BaseLayoutPage>
   )
 }
