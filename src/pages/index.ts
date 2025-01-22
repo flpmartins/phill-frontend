@@ -1,0 +1,7 @@
+export * from './login/Login'
+export * from './forgot-password/ForgotPassword'
+export * from './reset-password/ResetPassword'
+export * from './register/Register'
+export * from './profile/Profile'
+export * from './list-products/ListProducts'
+export * from './dashboard/Dashboard'
