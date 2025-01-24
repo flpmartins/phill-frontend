@@ -71,8 +71,7 @@ export const Register: React.FC = () => {
       addToast({
         type: 'success',
         title: 'Cadastro concluído com sucesso!',
-        description:
-          'Confira seu e-mail para mais informações. A Analisa entrará em contato em breve para ativar sua conta.',
+        description: 'Confira seu e-mail para ativar sua conta.',
       })
 
       navigate('/')
